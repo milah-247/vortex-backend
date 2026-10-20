@@ -305,6 +305,8 @@ export interface AppConfig {
     publicBucket: string;
     storageKind: "local" | "memory";
     localDir: string;
+    /** Widest range, in UTC days, the on-demand admin export accepts. */
+    exportMaxDays: number;
   };
   secrets: {
     /** Provider name: "env" | "aws-secrets-manager" | "vault-kv". */
@@ -560,6 +562,7 @@ export default (): AppConfig => ({
     publicBucket: process.env.DATASETS_PUBLIC_BUCKET ?? "vortex-public-datasets",
     storageKind: (process.env.DATASETS_STORAGE ?? "local") as "local" | "memory",
     localDir: process.env.DATASETS_LOCAL_DIR ?? ".datasets",
+    exportMaxDays: parseInt(process.env.DATASETS_EXPORT_MAX_DAYS ?? "31", 10),
   },
   secrets: {
     provider: (process.env.SECRETS_PROVIDER ?? "env") as "env" | "aws-secrets-manager" | "vault-kv",

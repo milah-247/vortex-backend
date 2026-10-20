@@ -422,6 +422,8 @@ export const envValidationSchema = Joi.object({
   DATASETS_PUBLIC_BUCKET: Joi.string().default("vortex-public-datasets"),
   DATASETS_STORAGE: Joi.string().valid("local", "memory").default("local"),
   DATASETS_LOCAL_DIR: Joi.string().default(".datasets"),
+  // Widest range (UTC days) POST /api/v1/admin/datasets/export accepts (issue #592).
+  DATASETS_EXPORT_MAX_DAYS: Joi.number().integer().min(1).max(366).default(31),
 
   // ── #412 — Cursor HMAC secret ──────────────────────────────────────────────
   // HMAC-SHA256 key used to sign opaque pagination cursors.

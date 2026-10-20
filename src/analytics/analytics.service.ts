@@ -1,12 +1,14 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { Intent } from "../intents/intents.types";
+import { Intent, STELLAR_CHAIN } from "../intents/intents.types";
 import { IAnalyticsStore } from "./analytics.store";
 import { ANALYTICS_STORE } from "./analytics.tokens";
 import {
   AnalyticsFillEvent,
   AnalyticsQuery,
+  ChainPairPoint,
   FeesPoint,
   LatencyPoint,
+  SlippagePoint,
   SolverSharePoint,
   VolumePoint,
 } from "./analytics.types";
@@ -43,6 +45,14 @@ export class AnalyticsService {
     return this.store.querySolverShare(query);
   }
 
+  getChainPair(query: AnalyticsQuery): Promise<ChainPairPoint[]> {
+    return this.store.queryChainPair(query);
+  }
+
+  getSlippage(query: AnalyticsQuery): Promise<SlippagePoint[]> {
+    return this.store.querySlippage(query);
+  }
+
   // ── ingestion ─────────────────────────────────────────────────────────────
 
   /** Ingest a single filled intent (event-driven). No-op for non-filled intents. */
@@ -71,12 +81,16 @@ export class AnalyticsService {
       eventId: `fill:${intent.intentId}`,
       timestamp: filledAt * 1000,
       chain: intent.srcChain,
+      // Every intent settles on Stellar (`dstToken` is a StellarToken), so the
+      // destination chain is fixed until the Intent model grows a dstChain.
+      dstChain: STELLAR_CHAIN,
       srcToken: intent.srcToken.symbol,
       dstToken: intent.dstToken.symbol,
       solver: intent.solver ?? "unattributed",
       volume: BigInt(intent.fillAmount ?? "0"),
       fees: BigInt(intent.feeAmount ?? "0"),
       durationMs,
+      quotedDstAmount: intent.quotedDstAmount ? BigInt(intent.quotedDstAmount) : null,
     };
   }
 }

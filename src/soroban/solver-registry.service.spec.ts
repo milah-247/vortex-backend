@@ -135,6 +135,7 @@ function makeConfigService(
       publicBucket: "vortex-public-datasets",
       storageKind: "local",
       localDir: ".datasets",
+      exportMaxDays: 31,
     },
     secrets: {
       provider: "env",
